@@ -10,7 +10,7 @@ OVERVIEW
 USAGE
 -----
 
-If you have already have a `.BasiliskIIVM` generated, you can launch it by running `basiliskiivm start <vm_name>.BasiliskIIVM` (replacing "<vm_name>" with the name of your BasiliskII VM name).
+If you have already have a `.BasiliskIIVM` generated, you can launch it by running `basiliskiivm start <vm_name>.BasiliskIIVM` (replacing "<vm_name>" with the name of your BasiliskII VM name). You can check whether a VM is already/still running by running `basiliskiivm status <vm_name>.BasiliskIIVM`. While there is a `stop` command, it currently just reminds you to safely shut the OS down using Special > Shutdown.
 
 While not yet implemented, you will be able to package your existing BasiliskII configuration (for example, one you've configured & tested with `BasiliskIIGUI`) into a `.BasiliskIIVM` directory by running `basiliskiivm package <vm_name>.BasiliskIIVM`. This will take your `~/.basilisk_ii_prefs` file, the ROM file, and disk images that are specified in it, and move them into the specified `.BasiliskIIVM` directory.
 
@@ -22,8 +22,9 @@ Run `basiliskiivm -h` for further usage instructions.
 Each `.BasiliskIIVM` directory contains all the configuration settings & data (including disk images) needed to run BasiliskII. This makes it very easy to move, backup, or run multiple individual VMs. Each directory contains:
 
 * The BasiliskII `.basilisk_ii_prefs` preferences/configuration file.
-* The ROM file
-* Any number of disk images
+* A `.basiliskii.pid` file which exists & contains the PID of the active instance, when running.
+* The ROM file.
+* Any number of disk images.
 
 LICENSE
 -------
