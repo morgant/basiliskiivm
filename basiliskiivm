@@ -15,9 +15,13 @@
 # Copyright (c) 2016, Morgan T. Aldridge. All rights reserved.
 # 
 
+# info
+tool="$(basename "$0")"
+version="0.1"
+copyright="Copyright (c) 2016 Morgan Aldridge"
+
 # global variables
 user="$(whoami)"
-tool="$(basename "$0")"
 BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
 if [ "$user" == "root" ]; then
 	PID_FILE_PATH="${PID_FILE_PATH:="/var/run/${tool}"}"
@@ -27,7 +31,22 @@ fi
 basiliskii_prefs_file=".basilisk_ii_prefs"
 
 function usage() {
-	echo "Usage: ${tool} [options] <command> [...]"
+	echo "Usage: ${tool} [options] <command>"
+	echo
+	echo "Options:"
+	echo " -h, --help    : print these usage instructions"
+	echo " -V, --version : print version information"
+	echo
+	echo "Commands:"
+	echo " package       : package the current BasiliskII configuration into"
+	echo "                 a .BasiliskIIVM package"
+	echo " start <path>  : start a BasiliskII instance running from a"
+	echo "                 .BasiliskIIVM package"
+	echo
+}
+
+function version() {
+	echo "${tool} v${version} ${copyright}"
 }
 
 function vm_pkg_name() {
@@ -156,6 +175,10 @@ function main() {
 	case "$1" in
 		"-h" | "--help")
 			usage
+			exit 0
+			;;
+		"-V" | "--version")
+			version
 			exit 0
 			;;
 		"start")
