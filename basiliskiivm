@@ -1,0 +1,176 @@
+#!/bin/bash
+
+# 
+# basiliskiivm - Package BasiliskII emulator settings & disk images
+#                into a single '.basiliskiivm' directory and run
+#                from there.
+# 
+# CHANGE LOG:
+# 
+# v0.1   2016-12-08 - Morgan T. Aldridge <morgant@makkintosshu.com>
+#                     Initial version.
+# 
+# LICENSE:
+# 
+# Copyright (c) 2016, Morgan T. Aldridge. All rights reserved.
+# 
+
+# global variables
+user="$(whoami)"
+tool="$(basename "$0")"
+BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
+if [ "$user" == "root" ]; then
+	PID_FILE_PATH="${PID_FILE_PATH:="/var/run/${tool}"}"
+else
+	PID_FILE_PATH="${PID_FILE_PATH:="${HOME}/.${tool}"}"
+fi
+basiliskii_prefs_file=".basilisk_ii_prefs"
+
+function usage() {
+	echo "Usage: ${tool} [options] <command> [...]"
+}
+
+function vm_pkg_name() {
+	local success=false
+	
+	local vm="$(basename "$1")"
+	if [[ "$vm" =~ ^(.+)\.[Bb]asilisk[Ii]{2}[Vv][Mm]$ ]]; then
+		echo "${BASH_REMATCH[1]}"
+		success=true
+	fi
+	
+	$success
+}
+
+function vm_pkg_config_file() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local prefs_file="$1/${basiliskii_prefs_file}"
+		if [ -f "$prefs_file" ]; then
+			echo "$prefs_file"
+			sucess=true	
+		fi
+	fi
+	
+	$success
+}
+
+function vm_is_running() {
+	local running=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local pid_path="${PID_FILE_PATH}/${vm}.pid"
+		if [ -f "$pid_path" ]; then
+			if ps -p "$(cat "$pid_path")" > /dev/null 2>&1; then
+				running=true
+			fi
+		fi
+	fi
+	
+	$running
+}
+
+function vm_create_pid_file() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local pid_path="${PID_FILE_PATH}/${vm}.pid"
+		
+		# create the pid file directory, if necessary
+		if [ ! -d "$PID_FILE_PATH" ]; then
+			mkdir "${PID_FILE_PATH}"
+		fi
+		
+		# create the pid file
+		if ! echo "$2" > "$pid_path"; then
+			echo "ERROR! Unable to create the '$vm' BasiliskII VM PID file '$pid_path'."
+		else
+			success=true
+		fi		
+	fi
+	
+	$success
+}
+
+function vm_delete_pid_file() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local pid_path="${PID_FILE_PATH}/${vm}.pid"
+	
+		if [ ! -f "$pid_path" ]; then
+			echo "ERROR! The '$vm' BasiliskII VM PID file '$pid_path' doesn't exist, so cannot delete it."
+		else
+			if ! rm "$pid_path"; then
+				echo "ERROR! Unable to delete the '$vm' BasiliskII VM PID file '$pid_path'."
+			else
+				success=true
+			fi
+		fi
+	fi
+	
+	$success
+}
+
+function package() {
+	success=false
+	
+	echo "ERROR! This functionality isn't implemented yet."
+	
+	$success
+}
+
+function vm_start() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		if vm_is_running "$1"; then
+			echo "Error! The '$vm' BasiliskII VM is already running."
+		else
+			local config="$(vm_pkg_config_file "$1")"
+			if [ -z "$config" ]; then
+				echo "Error! The '$vm' BasiliskII VM's config file couldn't be found."
+			else
+				echo "Starting the '$vm' BasiliskII VM..."
+				"$BASILISKII_BINARY" --config "$config" >/dev/null &
+				local pid="$!"
+				if [ -z "$pid" -a "$pid" -lt 1 ]; then
+					echo "ERROR! The '$vm' BasiliskII VM didn't start correctly."
+				elif vm_create_pid_file "$1" "$pid"; then
+						success=true
+				fi
+			fi
+		fi
+	fi
+	
+	$success
+}
+
+function main() {
+	case "$1" in
+		"-h" | "--help")
+			usage
+			exit 0
+			;;
+		"start")
+			shift
+			vm_start "$1"
+			;;
+		"package")
+			shift
+			package "$1"
+			;;
+		*)
+			echo "ERROR! Unknown option '$1'. Exiting"
+			exit 1
+			;;
+	esac
+}
+
+main "$@"
