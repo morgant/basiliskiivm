@@ -33,6 +33,7 @@ function usage() {
 	echo " -V, --version : print version information"
 	echo
 	echo "Commands:"
+	echo " info          : print basic configuration info for a .BasiliskIIVM package"
 	echo " package       : package the current BasiliskII configuration into"
 	echo "                 a .BasiliskIIVM package"
 	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM package"
@@ -135,6 +136,14 @@ function vm_create_package() {
 	$success
 }
 
+function vm_info() {
+	local success=false
+	
+	echo "ERROR! This functionality isn't implemented yet."
+	
+	$success
+}
+
 function vm_status() {
 	local success=false
 	
@@ -204,6 +213,10 @@ function main() {
 		"-V" | "--version")
 			version
 			exit 0
+			;;
+		"info")
+			shift
+			vm_info "$1"
 			;;
 		"start")
 			shift
