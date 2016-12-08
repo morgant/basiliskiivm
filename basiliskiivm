@@ -40,8 +40,8 @@ function usage() {
 	echo "Commands:"
 	echo " package       : package the current BasiliskII configuration into"
 	echo "                 a .BasiliskIIVM package"
-	echo " start <vm>    : start a BasiliskII instance running from a"
-	echo "                 .BasiliskIIVM package"
+	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM package"
+	echo " status <vm>   : get the status of a BasiliskII instance"
 	echo " stop <vm>     : stop a running BasiliskII instance"
 	echo
 }
@@ -137,10 +137,27 @@ function vm_delete_pid_file() {
 	$success
 }
 
-function package() {
+function vm_create_package() {
 	success=false
 	
 	echo "ERROR! This functionality isn't implemented yet."
+	
+	$success
+}
+
+function vm_status() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		echo -n "'$vm': "
+		if vm_is_running "$1"; then
+			echo "Running"
+		else
+			echo "Stopped"
+		fi
+		success=true
+	fi
 	
 	$success
 }
@@ -202,13 +219,17 @@ function main() {
 			shift
 			vm_start "$1"
 			;;
+		"status")
+			shift
+			vm_status "$1"
+			;;
 		"stop")
 			shift
 			vm_stop "$1"
 			;;
 		"package")
 			shift
-			package "$1"
+			vm_create_package "$1"
 			;;
 		*)
 			echo "ERROR! Unknown option '$1'. Exiting"
