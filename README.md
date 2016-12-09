@@ -10,7 +10,11 @@ OVERVIEW
 USAGE
 -----
 
-If you have already have a `.BasiliskIIVM` generated, you can launch it by running `basiliskiivm start <vm_name>.BasiliskIIVM` (replacing "<vm_name>" with the name of your BasiliskII VM name). You can check whether a VM is already/still running by running `basiliskiivm status <vm_name>.BasiliskIIVM`. While there is a `stop` command, it currently just reminds you to safely shut the OS down using Special > Shutdown.
+If you have already have a `.BasiliskIIVM` generated, you can launch it by running `basiliskiivm start <vm_name>.BasiliskIIVM` (replacing "<vm_name>" with the name of your BasiliskII VM name).
+
+You can check whether a VM is already/still running by running `basiliskiivm status <vm_name>.BasiliskIIVM`. While there is a `stop` command, it currently just reminds you to safely shut the OS down using Special > Shutdown.
+
+You can create snapshots of a VM by running `basiliskiivm snapshot <vm_name>.BasiliskIIVM`. This currently just creates date-stamped copies of all the disks in the VM, so it's not particularly efficient. You can view all snapshots by running `basiliskiivm snapshots <vm_name>.BasiliskIIVM`.
 
 While not yet implemented, you will be able to package your existing BasiliskII configuration (for example, one you've configured & tested with `BasiliskIIGUI`) into a `.BasiliskIIVM` directory by running `basiliskiivm package <vm_name>.BasiliskIIVM`. This will take your `~/.basilisk_ii_prefs` file, the ROM file, and disk images that are specified in it, and move them into the specified `.BasiliskIIVM` directory.
 
@@ -25,6 +29,7 @@ Each `.BasiliskIIVM` directory contains all the configuration settings & data (i
 * A `.basiliskii.pid` file which exists & contains the PID of the active instance, when running.
 * The ROM file.
 * Any number of disk images.
+* If there are any snapshots, a `Snapshots` directory containing one folder per snapshot (named in the 'YYYYmmdd-HHMMSS' format). Inside each individual snapshot folder will be a copy of all the disk images at the time of the snapshot.
 
 LICENSE
 -------
