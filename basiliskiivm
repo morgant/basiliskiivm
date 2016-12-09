@@ -58,6 +58,11 @@ function usage() {
 	echo " status <vm>   : get the status of a .BasiliskIIVM"
 	echo " stop <vm>     : stop a running .BasiliskIIVM"
 	echo
+	echo "Environment Variables:"
+	echo " BASILISKII_BINARY    : path to your BasiliskII binary, if it's not in your search path"
+	echo " BASILISKII_VMS_PATH  : path where you store your BasiliskII VMs"
+	echo " BASILISKII_SNAPSHOT_COMPRESSION: method used for snapshot compression ('none', 'gzip')"
+	echo
 }
 
 function version() {
