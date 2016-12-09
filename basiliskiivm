@@ -22,6 +22,7 @@ copyright="Copyright (c) 2016 Morgan Aldridge"
 
 # global variables
 BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
+BASILISKII_VMS_PATH="${BASILISKII_VMS_PATH:="${HOME}/Documents/BasiliskII"}"
 basiliskii_prefs_file=".basilisk_ii_prefs"
 basiliskii_pid_file=".basiliskii.pid"
 
@@ -47,12 +48,12 @@ function usage() {
 	echo " -V, --version : print version information"
 	echo
 	echo "Commands:"
-	echo " info          : print basic configuration info for a .BasiliskIIVM package"
-	echo " package       : package the current BasiliskII configuration into"
-	echo "                 a .BasiliskIIVM package"
-	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM package"
-	echo " status <vm>   : get the status of a BasiliskII instance"
-	echo " stop <vm>     : stop a running BasiliskII instance"
+	echo " info          : print basic configuration info for a .BasiliskIIVM"
+	echo " list [<path>] : list all .BasiliskIIVM in path (or none for default directory"
+	echo " package       : package the current BasiliskII configuration into a .BasiliskIIVM"
+	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM"
+	echo " status <vm>   : get the status of a .BasiliskIIVM"
+	echo " stop <vm>     : stop a running .BasiliskIIVM"
 	echo
 }
 
@@ -288,6 +289,21 @@ function vm_stop() {
 	$success
 }
 
+function list_vms() {
+	success=false
+	
+	local vms_path="$1"
+	if [ -z "$vms_path" ]; then
+		vms_path="$BASILISKII_VMS_PATH"
+	fi
+	while IFS= read -r line; do
+		echo "$(basename "$line")"
+	done <<< "$(find "$vms_path" -iname "*.BasiliskIIVM")"
+	success=true
+	
+	$success
+}
+
 function main() {
 	case "$1" in
 		"-h" | "--help")
@@ -301,6 +317,10 @@ function main() {
 		"info")
 			shift
 			vm_info "$1"
+			;;
+		"list")
+			shift
+			list_vms "$1"
 			;;
 		"start")
 			shift
