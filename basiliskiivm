@@ -51,6 +51,7 @@ function usage() {
 	echo " info          : print basic configuration info for a .BasiliskIIVM"
 	echo " list [<path>] : list all .BasiliskIIVM in path (or none for default directory"
 	echo " package       : package the current BasiliskII configuration into a .BasiliskIIVM"
+	echo " snapshot <vm> : create a snapshot of the current state of disks in the .BasiliskIIVM"
 	echo " snapshots <vm>: list all snapshots in a .BasiliskIIVM"
 	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM"
 	echo " status <vm>   : get the status of a .BasiliskIIVM"
@@ -111,6 +112,30 @@ function vm_pkg_config_parse() {
 			done < "$config"
 			success=true
 		fi
+	fi
+	
+	$success
+}
+
+function vm_pkg_disks() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local disk_paths=()
+		while IFS= read -r line; do
+			if [[ "$line" =~ ^disk\ (.+)$ ]]; then
+# 				if [ ! -f "${BASH_REMATCH[1]}" ]; then
+# 					echo "Warning: '${vm}' VM disk '${BASH_REMATCH[1]}' does not exist!"
+# 				fi
+				disk_paths+=("${BASH_REMATCH[1]}")
+			fi
+		done <<< "$(vm_pkg_config_parse "$1" disk)"
+		
+		for disk in "${disk_paths[@]}"; do
+			echo "$(basename "$disk")"
+			success=true
+		done
 	fi
 	
 	$success
@@ -290,19 +315,59 @@ function vm_stop() {
 	$success
 }
 
-function vm_pkg_list_snapshots() {
+function vm_pkg_snapshots() {
 	local success=false
 	
 	local vm="$(vm_pkg_name "$1")"
 	if [ -n "$vm" ]; then
 		local snapshots_path="${1}/Snapshots"
-		local count=0
-		if [ -d "$snapshots_path "]; then
+		if [ -d "$snapshots_path" ]; then
 			while IFS= read -r line; do
 				echo "$(basename "$line")"
 			done <<< "$(find "$snapshots_path" -type d -mindepth 1 -maxdepth 1)"
 		fi
 		success=true
+	fi
+	
+	$success
+}
+
+function vm_pkg_create_snapshot() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		if vm_is_running "$1"; then
+			echo "Error! You cannot create a snapshot while the '${vm}' BasiliskII VM is running. Please stop it and try again."
+			return 1
+		fi
+	
+		local snapshots_path="${1}/Snapshots"
+		if [ ! -d "$snapshots_path" ]; then
+			if ! mkdir "$snapshots_path"; then
+				echo "Error! Unable to create snapshots directory '${snapshots_path}'."
+				return 1
+			fi
+		fi
+		local timestamp="$(date +%Y%m%d-%H%M%S)"
+		local snapshot="${snapshots_path}/${timestamp}"
+		if ! mkdir "$snapshot"; then
+			echo "Error! Unable to create snapshot directory '${snapshot}'."
+		else
+			local disk_copy_success=true
+			while IFS= read -r disk; do
+				if ! cp "${1}/${disk}" "${snapshot}/${disk}"; then
+					echo "Error! Unable to copy disk '${1}/${disk}' to '${snapshot}/${disk}'."
+					disk_copy_success=false
+				fi
+			done <<< "$(vm_pkg_disks "$1")"
+			if $disk_copy_success; then
+				echo "Created '${timestamp}' snapshot of '${vm}' BasiliskII VM."
+				success=true
+			else
+				echo "Error! Unable to create '${timestamp}' snapshot of '${vm}' BasiliskII VM."
+			fi
+		fi
 	fi
 	
 	$success
@@ -341,8 +406,13 @@ function main() {
 			shift
 			list_vms "$1"
 			;;
+		"snapshot")
+			shift
+			vm_pkg_create_snapshot "$1"
+			;;
 		"snapshots")
-			vm_pkg_list_snapshots "$1"
+			shift
+			vm_pkg_snapshots "$1"
 			;;
 		"start")
 			shift
