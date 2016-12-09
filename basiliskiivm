@@ -23,6 +23,7 @@ copyright="Copyright (c) 2016 Morgan Aldridge"
 # global variables
 BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
 BASILISKII_VMS_PATH="${BASILISKII_VMS_PATH:="${HOME}/Documents/BasiliskII"}"
+BASILISKII_SNAPSHOT_COMPRESSION="${BASILISKII_SNAPSHOT_COMPRESSION:=gzip}"
 basiliskii_prefs_file=".basilisk_ii_prefs"
 basiliskii_pid_file=".basiliskii.pid"
 
@@ -354,14 +355,30 @@ function vm_pkg_create_snapshot() {
 		if ! mkdir "$snapshot"; then
 			echo "Error! Unable to create snapshot directory '${snapshot}'."
 		else
-			local disk_copy_success=true
+			local disks_copy_success=true
 			while IFS= read -r disk; do
-				if ! cp "${1}/${disk}" "${snapshot}/${disk}"; then
-					echo "Error! Unable to copy disk '${1}/${disk}' to '${snapshot}/${disk}'."
-					disk_copy_success=false
+				local src_disk="${1}/${disk}"
+				local dst_disk="${snapshot}/${disk}"
+				local copy_success=true
+				case "$BASILISKII_SNAPSHOT_COMPRESSION" in
+					"gzip")
+						dst_disk="${dst_disk}.gz"
+						if ! gzip -k -c "$src_disk" > "$dst_disk"; then
+							copy_success=false
+						fi
+						;;
+					*)
+						if ! cp "$src_disk" "$dst_disk"; then
+							copy_success=false
+						fi
+						;;
+				esac
+				if ! $copy_success; then
+					echo "Error! Unable to copy disk '${src_disk}' to '${dst_disk}'."
+					disks_copy_success=false
 				fi
 			done <<< "$(vm_pkg_disks "$1")"
-			if $disk_copy_success; then
+			if $disks_copy_success; then
 				echo "Created '${timestamp}' snapshot of '${vm}' BasiliskII VM."
 				success=true
 			else
