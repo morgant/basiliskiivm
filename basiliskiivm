@@ -240,7 +240,7 @@ function vm_info() {
 		
 		echo "$(basename "$1"):"
 		echo
-		echo "Path:          $(dirname $1)"
+		echo "Path:          $(dirname "$1")"
 		echo "ROM:           $(basename "${rom_path}")"
 		echo "RAM:           ${ram_size}MB"
 		echo "Resolution:    ${screen_size}"
