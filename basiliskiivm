@@ -51,6 +51,7 @@ function usage() {
 	echo " info          : print basic configuration info for a .BasiliskIIVM"
 	echo " list [<path>] : list all .BasiliskIIVM in path (or none for default directory"
 	echo " package       : package the current BasiliskII configuration into a .BasiliskIIVM"
+	echo " snapshots <vm>: list all snapshots in a .BasiliskIIVM"
 	echo " start <vm>    : start a BasiliskII instance from a .BasiliskIIVM"
 	echo " status <vm>   : get the status of a .BasiliskIIVM"
 	echo " stop <vm>     : stop a running .BasiliskIIVM"
@@ -289,6 +290,24 @@ function vm_stop() {
 	$success
 }
 
+function vm_pkg_list_snapshots() {
+	local success=false
+	
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local snapshots_path="${1}/Snapshots"
+		local count=0
+		if [ -d "$snapshots_path "]; then
+			while IFS= read -r line; do
+				echo "$(basename "$line")"
+			done <<< "$(find "$snapshots_path" -type d -mindepth 1 -maxdepth 1)"
+		fi
+		success=true
+	fi
+	
+	$success
+}
+
 function list_vms() {
 	success=false
 	
@@ -321,6 +340,9 @@ function main() {
 		"list")
 			shift
 			list_vms "$1"
+			;;
+		"snapshots")
+			vm_pkg_list_snapshots "$1"
 			;;
 		"start")
 			shift
