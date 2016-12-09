@@ -25,6 +25,20 @@ BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
 basiliskii_prefs_file=".basilisk_ii_prefs"
 basiliskii_pid_file=".basiliskii.pid"
 
+function in_array() {
+	local found=false
+	local value="$1"
+	shift
+	
+	if [ -z "$value" ]; then $found; fi
+	if [ ${#@} -lt 1 ]; then $found; fi
+	for array_value in "$@"; do
+		if [ "$value" = "$array_value" ]; then found=true; fi
+	done
+	
+	$found
+}
+
 function usage() {
 	echo "Usage: ${tool} [options] <command>"
 	echo
@@ -67,6 +81,33 @@ function vm_pkg_config_file() {
 		if [ -f "$prefs_file" ]; then
 			echo "$prefs_file"
 			sucess=true	
+		fi
+	fi
+	
+	$success
+}
+
+function vm_pkg_config_parse() {
+	local success=false
+	local vm_path="$1"
+	shift
+	
+	local vm="$(vm_pkg_name "$vm_path")"
+	if [ -n "$vm" ]; then
+		local config="$(vm_pkg_config_file "$vm_path")"
+		if [ -z "$config" ]; then
+			echo "Error! The '$vm' BasiliskII VM's config file couldn't be found."
+		else
+			while IFS= read -r line; do
+				if [ -n "$line" ]; then
+					if [[ "$line" =~ ^([A-Za-z0-9]+)\ (.+)$ ]]; then
+						if in_array "${BASH_REMATCH[1]}" "$@"; then
+							echo "$line"
+						fi
+					fi
+				fi
+			done < "$config"
+			success=true
 		fi
 	fi
 	
@@ -139,7 +180,50 @@ function vm_create_package() {
 function vm_info() {
 	local success=false
 	
-	echo "ERROR! This functionality isn't implemented yet."
+	local vm="$(vm_pkg_name "$1")"
+	if [ -n "$vm" ]; then
+		local rom_path=""
+		local shared_path=""
+		local disk_paths=()
+		local screen_size=""
+		local ram_size=0
+		while IFS= read -r line; do
+			if [[ "$line" =~ ^([A-Za-z0-9]+)\ (.+)$ ]]; then
+				case "${BASH_REMATCH[1]}" in
+					"extfs")
+						shared_path="${BASH_REMATCH[2]}"
+						;;
+					"rom")
+						rom_path="${BASH_REMATCH[2]}"
+						;;
+					"ramsize")
+						ram_size=$(( ${BASH_REMATCH[2]} / 1024 / 1024 ))
+						;;
+					"disk")
+						disk_paths+=("${BASH_REMATCH[2]}")
+						;;
+					"screen")
+						if [[ "${BASH_REMATCH[2]}" =~ ^([A-Za-z]+)/([0-9]+)/([0-9]+)$ ]]; then
+							screen_size="${BASH_REMATCH[2]}x${BASH_REMATCH[3]}"
+						fi
+						;;
+				esac
+			fi
+		done <<< "$(vm_pkg_config_parse "$1" disk extfs screen rom ramsize)"
+		
+		echo "$(basename "$1"):"
+		echo
+		echo "Path:          $(dirname $1)"
+		echo "ROM:           $(basename "${rom_path}")"
+		echo "RAM:           ${ram_size}MB"
+		echo "Resolution:    ${screen_size}"
+		echo "Shared Folder: ${shared_path}"
+		echo "Disks:"
+		for disk in "${disk_paths[@]}"; do
+			echo "               $(basename "$disk")"
+		done
+		success=true		
+	fi
 	
 	$success
 }
