@@ -10,7 +10,7 @@
 # v0.1   2016-12-08 - Morgan T. Aldridge <morgant@makkintosshu.com>
 #                     Initial version.
 # v0.1.1 2017-11-07 - Morgan T. Aldridge
-#                     
+#                     Automatically search for BasiliskII binary on macOS.
 # 
 # LICENSE:
 # 
@@ -89,6 +89,31 @@ function usage() {
 
 function version() {
 	echo "${tool} v${version} ${copyright}"
+}
+
+function find_basilisk() { # but don't look!
+  local success=false
+  
+  if [ -x "$BASILISKII_BINARY" ]; then
+    success=true
+  elif which "$BASILISKII_BINARY" >/dev/null; then
+    success=true
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    local mac_binary="$(find ~/Applications /Applications -type f -path "*.app/Contents/MacOS*" -name "$BASILISKII_BINARY" | head -n 1)"
+    if [ -n "$mac_binary" ]; then
+      read -p "Found '$mac_binary', would you like to use this binary? [Y/n] " response
+      if [ "$response" = "Y" ]; then
+        BASILISKII_BINARY="$mac_binary"
+        success=true
+      fi
+    fi
+  fi
+  
+  if ! $success; then
+    echo "ERROR! Unable to locate the BasiliskII binary!"
+  fi
+  
+  $success
 }
 
 function vm_pkg_name() {
@@ -433,6 +458,11 @@ function list_vms() {
 }
 
 function main() {
+  if ! find_basilisk; then
+    echo "Exiting."
+    exit 1
+  fi
+  
 	case "$1" in
 		"-h" | "--help")
 			usage
