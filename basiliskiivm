@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # 
 # basiliskiivm - Package BasiliskII emulator settings & disk images
@@ -11,6 +11,8 @@
 #                     Initial version.
 # v0.1.1 2017-11-07 - Morgan T. Aldridge
 #                     Automatically search for BasiliskII binary on macOS.
+# v0.1.2 2019-01-28 0 Morgan T. Aldridge
+#                     Better *nix compatibility (tested OpenBSD).
 # 
 # LICENSE:
 # 
@@ -39,8 +41,8 @@
 
 # info
 tool="$(basename "$0")"
-version="0.1.1"
-copyright="Copyright (c) 2016-2017 Morgan Aldridge"
+version="0.1.2"
+copyright="Copyright (c) 2016-2019 Morgan Aldridge"
 
 # global variables
 BASILISKII_BINARY="${BASILISKII_BINARY:=BasiliskII}"
@@ -338,7 +340,7 @@ function vm_start() {
 				echo "Error! The '$vm' BasiliskII VM's config file couldn't be found."
 			else
 				echo "Starting the '$vm' BasiliskII VM..."
-				"$BASILISKII_BINARY" --config "$config" >/dev/null &
+				"$BASILISKII_BINARY" --nogui true --config "$config" >/dev/null &
 				local pid="$!"
 				if [ -z "$pid" -a "$pid" -lt 1 ]; then
 					echo "ERROR! The '$vm' BasiliskII VM didn't start correctly."
