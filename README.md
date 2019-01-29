@@ -34,7 +34,7 @@ Each `.BasiliskIIVM` directory contains all the configuration settings & data (i
 LICENSE
 -------
 
-Copyright (c) 2016-2017, Morgan T. Aldridge. All rights reserved.
+Copyright (c) 2016-2019, Morgan T. Aldridge. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
