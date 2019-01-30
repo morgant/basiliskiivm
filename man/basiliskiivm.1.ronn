@@ -1,0 +1,62 @@
+# basiliskiivm(1) -- manage and run multiple BasiliskII VMs
+
+## SYNOPSIS
+
+`basiliskiivm` [options] <command>
+
+## DESCRIPTION
+
+BasiliskII(1) is a free, portable 68k Mac emulator, however it only has a single configuration file and so does not easily support emulating multiple virtual Macs. `basiliskiivm` is a wrapper around BasiliskII which simplifies the process of creating, managing, and running multiple VMs. It does this by packaging BasiliskII configuration files, disk images, and other state data for each VM into a *.BasiliskIIVM directory/bundle, which can then be acted on using convenience commands.
+
+## OPTIONS
+
+* `-h`, `--help`:
+  print usage instructions
+
+* `-V`, `--version`:
+  print version information
+
+## COMMANDS
+
+* `info <vm>`:
+  print basic configuration info for a .BasiliskIIVM
+
+* `list [<path>]`:
+  list all .BasiliskIIVM in path (or none for default directory)
+
+* `package`:
+  package the current BasiliskII configuration into a .BasiliskIIVM
+
+* `snapshot <vm>`:
+  create a snapshot of the current state of disks in the .BasiliskIIVM
+
+* `snapshots <vm>`:
+  list all snapshots in a .BasiliskIIVM
+
+* `start <vm>`:
+  start a BasiliskII instance from a .BasiliskIIVM
+
+* `status <vm>`:
+  get the status of a .BasiliskIIVM
+
+* `stop <vm>`:
+  stop a running .BasiliskIIVM
+
+## ENVIRONMENT VARIABLES
+
+* `BASILISKII_BINARY`:
+  path to your BasiliskII binary, if it's not in your search path
+
+* `BASILISKII_VMS_PATH`:
+  path where you store your BasiliskII VMs
+
+* `BASILISKII_SNAPSHOT_COMPRESSION`:
+  method used for snapshot compression ('none', 'gzip')
+
+## SEE ALSO
+
+BasiliskII(1)
+
+## AUTHOR
+
+Morgan Aldridge (morgant@makkintosshu.com)

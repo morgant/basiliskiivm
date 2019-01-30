@@ -1,0 +1,77 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BASILISKIIVM" "1" "January 2019" "" ""
+.
+.SH "NAME"
+\fBbasiliskiivm\fR \- manage and run multiple BasiliskII VMs
+.
+.SH "SYNOPSIS"
+\fBbasiliskiivm\fR \fIoptions\fR \fIcommand\fR
+.
+.SH "DESCRIPTION"
+BasiliskII(1) is a free, portable 68k Mac emulator, however it only has a single configuration file and so does not easily support emulating multiple virtual Macs\. \fBbasiliskiivm\fR is a wrapper around BasiliskII which simplifies the process of creating, managing, and running multiple VMs\. It does this by packaging BasiliskII configuration files, disk images, and other state data for each VM into a *\.BasiliskIIVM directory/bundle, which can then be acted on using convenience commands\.
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+print usage instructions
+.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+print version information
+.
+.SH "COMMANDS"
+.
+.TP
+\fBinfo <vm>\fR
+print basic configuration info for a \.BasiliskIIVM
+.
+.TP
+\fBlist [<path>]\fR
+list all \.BasiliskIIVM in path (or none for default directory)
+.
+.TP
+\fBpackage\fR
+package the current BasiliskII configuration into a \.BasiliskIIVM
+.
+.TP
+\fBsnapshot <vm>\fR
+create a snapshot of the current state of disks in the \.BasiliskIIVM
+.
+.TP
+\fBsnapshots <vm>\fR
+list all snapshots in a \.BasiliskIIVM
+.
+.TP
+\fBstart <vm>\fR
+start a BasiliskII instance from a \.BasiliskIIVM
+.
+.TP
+\fBstatus <vm>\fR
+get the status of a \.BasiliskIIVM
+.
+.TP
+\fBstop <vm>\fR
+stop a running \.BasiliskIIVM
+.
+.SH "ENVIRONMENT VARIABLES"
+.
+.TP
+\fBBASILISKII_BINARY\fR
+path to your BasiliskII binary, if it\'s not in your search path
+.
+.TP
+\fBBASILISKII_VMS_PATH\fR
+path where you store your BasiliskII VMs
+.
+.TP
+\fBBASILISKII_SNAPSHOT_COMPRESSION\fR
+method used for snapshot compression (\'none\', \'gzip\')
+.
+.SH "SEE ALSO"
+BasiliskII(1)
+.
+.SH "AUTHOR"
+Morgan Aldridge (morgant@makkintosshu\.com)
