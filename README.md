@@ -2,7 +2,7 @@
 ==============
 by Morgan T. Aldridge <morgant@makkintosshu.com>
 
-[![basiliskiivm on OpenHub](https://www.openhub.net/p/basiliskiivm/widgets/project_thin_badge.gif)](https://www.openhub.net/p/basiliskiivm)
+[![basiliskiivm on OpenHub](https://www.openhub.net/p/basiliskiivm/widgets/project_thin_badge.gif)](https://www.openhub.net/p/basiliskiivm) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DBY3R8ARLDELE&currency_code=USD&source=url)
 
 OVERVIEW
 --------
