@@ -2,6 +2,8 @@
 ==============
 by Morgan T. Aldridge <morgant@makkintosshu.com>
 
+[![basiliskiivm on OpenHub](https://www.openhub.net/p/basiliskiivm/widgets/project_thin_badge.gif)](https://www.openhub.net/p/basiliskiivm)
+
 OVERVIEW
 --------
 
